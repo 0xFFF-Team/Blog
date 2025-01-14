@@ -1,0 +1,19 @@
+# HUGO
+public/
+resources/_gen/
+.hugo/
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+.ehthumbs.db
+
+# Node.js
+node_modules/
+
+# OS generated files
+*.tmp
+*.bak
