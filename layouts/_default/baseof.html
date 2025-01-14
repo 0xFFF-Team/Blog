@@ -8,7 +8,7 @@
   {{ partial "head.html" . }}
 
   {{ block "head" . }}{{""}}{{ end }}
-
+  {{ partial "math.html" . }} <!-- 引用 math.html -->
 
 </head>
 <body class="{{- ( or .Params.color $.Site.Params.ThemeColor ) -}}">
