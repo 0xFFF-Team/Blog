@@ -1083,9 +1083,9 @@ print()
 ### Onchain Checkin
 
 ​`solana`​的环境看到给了一个`Program ID`​  为`SUCTF2Q25DnchainCheckin11111111111111111111`​,那就直接去搜索(`Anchor.toml`​里面也写了`cluster`​为`devnet`​)
-
+```
 https://explorer.solana.com/address/SUCTF2Q25DnchainCheckin11111111111111111111?cluster\=devnet
-
+```
 在 `Checkin`​ 结构体的 `checkin`​ 方法中，代码中有：
 
 ```Rust
@@ -3386,7 +3386,7 @@ if __name__ == '__main__':
 
 验证一下，很完美
 
-{{< image src="https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/SUCTF_2025_Writeup-2025-01-14-16-08-56.png" alt="SUCTF_2025_Writeup-2025-01-14-16-08-56" position="center" style="border-radius: 1px;" >}}
+{{< image src="https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/SUCTF_2025_Writeup-2025-01-14-19-24-11.jpg" alt="SUCTF_2025_Writeup-2025-01-14-19-24-11" position="center" style="border-radius: 1px;" >}}
 
 exp:
 

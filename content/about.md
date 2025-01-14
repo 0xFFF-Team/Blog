@@ -4,7 +4,8 @@ title = 'About'
 toc = false
 +++
 
-Hack for fun! We were founded in January 2024.
+We were founded in January 2024. If you ask me what 0xFFF means, you look at the ASCII code(:
+
 If you wanna join pls send email to T_0xFFF@163.com.
 ## Selected Awards
 
