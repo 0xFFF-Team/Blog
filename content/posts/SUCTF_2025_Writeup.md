@@ -1,16 +1,12 @@
 +++
-title = "SUCTF 2025 Writeup"
+title = "SUCTF 2025 Writeup by 0xFFF"
 date = "2025-01-14T09:10:36+08:00"
 author = "GeekCmore"
-cover = ""
-coverCaption = ""
-tags = ["SUCTF", "Writeup"]
-keywords = ["", ""]
-description = ""
+tags = ["XCTF", "Writeup"]
+description = "本次比赛0xFFF战队稳中有进，最终获得季军的成绩，成功AK Reverse和Pwn方向，Misc方向也是全场解题数最多的队伍之一。"
 showFullContent = false
 readingTime = false
 hideComments = false
-color = "" #color from the theme settings
 +++
 
 本次比赛0xFFF战队稳中有进，最终获得季军的成绩，成功AK Reverse和Pwn方向，Misc方向也是全场解题数最多的队伍之一。

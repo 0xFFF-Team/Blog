@@ -31,7 +31,7 @@ theme = "re-terminal"
 
   # set post to show the last updated
   # If you use git, you can set `enableGitInfo` to `true` and then post will automatically get the last updated
-  showLastUpdated = false
+  showLastUpdated = true
 
   # set a custom favicon (default is a `themeColor` square)
   # favicon = "favicon.ico"
@@ -89,7 +89,7 @@ theme = "re-terminal"
     words = "words"
 
     [languages.en.params.logo]
-      logoText = "0xFFF"
+      logoText = "0xFFF-Team"
       logoHomeLink = "/"
 
     [languages.en.menu]
