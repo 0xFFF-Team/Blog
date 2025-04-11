@@ -1,18 +1,19 @@
----
-title: php pwn
-slug: php-pwn-zjjbnh
-url: /post/php-pwn-zjjbnh.html
-date: '2025-04-02 20:27:26+08:00'
-lastmod: '2025-04-11 12:47:20+08:00'
++++
+title: php pwn分析与phpgdb插件
+date: '2025-04-11 21:18:25+08:00'
+lastmod: '2025-04-11 21:21:14+08:00'
+author = "GeekCmore"
+tags: ["Pwn", "php pwn"]
+keywords: pwn,php pwn
 toc: true
-isCJKLanguage: true
----
-
++++
 
 
 # php pwn
 
-国内比赛最近非常喜欢出php的pwn，php解释器本身没有太多的可利用点，出题一般把漏洞埋在php的拓展。掌握了php的调试、函数传参、堆内存管理以后这类题难度都不大。
+# php pwn
+
+国内比赛最近非常喜欢出php的pwn，php解释器本身没有太多的可利用点，出题一般把漏洞埋在php的拓展。掌握了php的调试、函数传参、堆内存管理以后这类题难度都不大。由于php题的难度主要在调试方面，但是又没有很好用的gdb插件，因此自己写了一个phpgdb用于调试。
 
 ‍
 
@@ -50,7 +51,7 @@ $ make && make test && make install
 
 这样是由完整调试符号和源码的：
 
-![image](http://127.0.0.1:49715/assets/image-20250410163258-yxu9qe1.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250410163258-yxu9qe1.png)
 
 ### php配置文件
 
@@ -233,15 +234,15 @@ b zif_test1
 
 因此下断点跑完这个函数就能看到模块被加载进来：
 
-![image](http://127.0.0.1:49715/assets/image-20250403100903-1qg13pr.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250403100903-1qg13pr.png)
 
 此时可以接着下断点到`zif_test1`​，这里需要注意php编译之后的是函数名会加上`zif_`​前缀
 
-![image](http://127.0.0.1:49715/assets/image-20250403101006-vm19q4l.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250403101006-vm19q4l.png)
 
 ​`test3`​中可以看到栈溢出：
 
-![image](http://127.0.0.1:49715/assets/image-20250403101540-ygv81ts.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250403101540-ygv81ts.png)
 
 这里就不再赘述这个案例的利用方式了，结合后续题目进行介绍。
 
@@ -253,9 +254,9 @@ b zif_test1
 
 反编译的代码来看基本上除了参数处理以外就是原生的C代码，可读性比较强。
 
-![image](http://127.0.0.1:49715/assets/image-20250403102807-6mf5xf8.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250403102807-6mf5xf8.png)
 
-但是从题目来看，一般都是直接给的二进制文件，所以需要具体了解`zend_parse_parameters`​的传参规则，这里的讲解不会涉及[底层细节](https://www.bookstack.cn/read/php7-internal/7-func.md#7.6.2%20%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E8%A7%A3%E6%9E%90)：
+但是从题目来看，一般都是直接给的二进制文件，所以需要具体了解`zend_parse_parameters`​的传参规则，这里的讲解不会涉及[底层细节](https://www.bookstack.cn/read/php7-internal/7-func.md#7.6.2%20函数参数解析)：
 
 ```shell
 zend_parse_parameters(int num_args, const char *type_spec, ...);
@@ -268,7 +269,7 @@ zend_parse_parameters(int num_args, const char *type_spec, ...);
 对于参数类型而言，常用参数对照表：
 
 |类型规范符|对应的C语言类型|说明|
-| ------------| -----------------| -----------------------------------------------|
+| ----------| ---------------| ---------------------------------------------|
 |​`b`​或`i`​|int|整数类型，`b`​通常表示bool类型，而`i`​表示int类型|
 |​`l`​|long|长整型|
 |​`d`​|double|浮点数类型|
@@ -304,7 +305,7 @@ zend_parse_parameters(int num_args, const char *type_spec, ...);
 
 但是很多时候都是直接用`z`​来代替参数，在后面通常会有一个形如`v15[8] == 6`​的比较操作，这实际上是在确定参数的类型：
 
-![image](http://127.0.0.1:49715/assets/image-20250404155145-85om4a0.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404155145-85om4a0.png)
 
 具体对应关系是：
 
@@ -334,13 +335,11 @@ PHP将内存分配请求分为3种情况：
 
 huge内存：针对大于2M-4K的分配请求，直接调用mmap分配；
 
-[large内存](https://www.imooc.com/article/51124)：针对小于2M-4K，大于3K的分配请求，在chunk上查找满足条件的若干个连续page；
+large内存：针对小于2M-4K，大于3K的分配请求，在chunk上查找满足条件的若干个连续page；
 
 small内存：针对小于3K的分配请求；PHP拿出若干个页切割为8字节大小的内存块，拿出若干个页切割为16字节大小的内存块，24字节，32字节等等，将其组织成若干个空闲链表；每当有分配请求时，只在对应的空闲链表获取一个内存块即可；
 
 #### 相关结构体
-
-element
 
 在large和small两类chunk的第一个page里，会存储chunk的控制信息，这个结构体是`_zend_mm_chunk`​，所有的chunk会形成一个双向链表，`zend_mm_page_map`​利用位图记录512个page的使用情况，0代表空闲，1代表已经分配。`zend_mm_page_info`​通过`uint32_t`​存储FLAG信息，
 
@@ -360,7 +359,7 @@ struct _zend_mm_chunk {
 
 ```
 
-然后是[`\_zend\_mm\_heap`](https://github.com/php/php-src/blob/787f26c8827baa4fa6ed554fa4562750cc86d1a6/Zend/zend_alloc.c#L266)​，是chunk的上级管理结构，存储与堆分配相关的全局信息：
+然后是[`\\\_zend\\\_mm\\\_heap`](https://github.com/php/php-src/blob/787f26c8827baa4fa6ed554fa4562750cc86d1a6/Zend/zend_alloc.c#L266)​，是chunk的上级管理结构，存储与堆分配相关的全局信息：
 
 ```c
 struct _zend_mm_heap {
@@ -424,7 +423,7 @@ struct _zend_mm_heap {
 
 如果不方便看的话可以直接看gdb的结果：
 
-![image](http://127.0.0.1:49715/assets/image-20250410164120-plfurqi.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250410164120-plfurqi.png)
 
 堆的最上层结构体是封装了`zend_mm_heap`​的`zend_alloc_globals`​：
 
@@ -446,7 +445,7 @@ static zend_alloc_globals alloc_globals;
 
 这里只介绍small类型的内存分配，而这也是与我们攻击直接相关的部分。简单来说，small类型内存的空闲链表类似于2.27下的tcache空闲链表，也是单链表形式，并且没有任何保护，因此只需要修改链表中任一节点，即可劫持free的空闲链表。它的结构类似于：
 
-![image](http://127.0.0.1:49715/assets/image-20250410205551-23m98m6.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250410205551-23m98m6.png)
 
 #### 源码分析
 
@@ -577,19 +576,19 @@ gdb> b zif_some_mod_func
 
 ##### pheap
 
-查看最上层的堆信息：![image](http://127.0.0.1:49715/assets/image-20250411155511-6r48jx2.png)​
+查看最上层的堆信息：![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250411155511-6r48jx2.png)
 
 ##### psmall
 
 查看small slot链表：
 
-![image](http://127.0.0.1:49715/assets/image-20250411155547-krvuky3.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250411155547-krvuky3.png)
 
 ##### pelement
 
 查看给定地址所属于的element（最终分配的堆块）
 
-![image](http://127.0.0.1:49715/assets/image-20250411155656-or0ipg7.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250411155656-or0ipg7.png)
 
 #### 参考链接
 
@@ -646,11 +645,11 @@ php pwn部分就是泄露地址+溢出ret2libc，可以作为入门题目。
 
 分析给的`numberGame.so`​文件，发现是一个类似堆题的增删改查功能，其中`zif_show_chunk`​调用了一个自定义的`_quicksort`​，漏洞点在这个位置：
 
-![image](http://127.0.0.1:49715/assets/image-20250404124542-2q4uoq5.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404124542-2q4uoq5.png)
 
 但是要去具体分析`_quicksort`​的代码来找到漏洞形成原因会比较困难，这里使用LLM生成fuzz代码来把这个漏洞测出来：
 
-![image](http://127.0.0.1:49715/assets/image-20250404130916-s65ec0i.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404130916-s65ec0i.png)
 
 这是deepseek r1自动生成的代码，根据ida的代码可以进行细微的调整：
 
@@ -746,7 +745,7 @@ if __name__ == "__main__":
 
 拿到代码不需要改，直接跑，几秒钟找到十几个error输入：
 
-![image](http://127.0.0.1:49715/assets/image-20250404131348-f9nus2w.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404131348-f9nus2w.png)
 
 这个测试了一下，主要报错都是由于`edit(16....)`​导致的，这个属于是没什么用的洞。在fuzz里把这个问题修一下，顺便改一改参数：
 
@@ -802,7 +801,7 @@ add_chunk(3, [0xaad0a2ba, -1645749333, 0x6fcf2a, 0x588abdfe, 0xb6b4a49f, 1414422
 
 跑起来验证一下也就是`_quicksort`​排序的时候越界的问题，把size修改得任意大了，甚至name字段也被覆盖了：
 
-![image](http://127.0.0.1:49715/assets/image-20250404132547-n39gf22.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404132547-n39gf22.png)
 
 这个时候可以手工删减poc，以确定触发漏洞的输入：
 
@@ -846,11 +845,11 @@ show_chunk(0);
 
 会把size改大：
 
-![image](http://127.0.0.1:49715/assets/image-20250404133728-irm7iaq.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404133728-irm7iaq.png)
 
 这样可以得到一个在php堆上的下溢任意地址写：
 
-![image](http://127.0.0.1:49715/assets/image-20250404134112-cxyx8u9.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404134112-cxyx8u9.png)
 
 思路也比较简单，就是第一次利用越界写修改下一个chunk的`name`​指针，再利用这个`name`​指针实现任意地址写。这里给出直接打本地的脚本，远程同理：
 
@@ -918,11 +917,11 @@ edit_name(2, "1")
 
 题目还是一个典型的堆菜单，分析结构体有点抽象，感觉是为了埋洞之后方便利用搞的：
 
-![image](http://127.0.0.1:49715/assets/image-20250404164958-au287x1.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404164958-au287x1.png)
 
 漏洞点是`addHakcer`​的时候存在一个off by null的漏洞：
 
-![image](http://127.0.0.1:49715/assets/image-20250404165024-3sweb6p.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404165024-3sweb6p.png)
 
 按照如下布局：
 
@@ -944,7 +943,7 @@ displayHacker(0);
 
 即可覆盖`chunkList[1].ptr->str1_ptr`​：
 
-![image](http://127.0.0.1:49715/assets/image-20250404165217-nr557ub.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404165217-nr557ub.png)
 
 结合`editHacker`​的修改能力：
 
@@ -966,11 +965,11 @@ displayHacker(0);
 
 能在堆上进行一定的篡改：
 
-![image](http://127.0.0.1:49715/assets/image-20250404165741-tz02367.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250404165741-tz02367.png)
 
 通过适当构造可以得到任意地址写：
 
-![image](http://127.0.0.1:49715/assets/image-20250411172907-0bq68ih.png)​
+![image](https://0xfff-1302812534.cos.ap-shanghai.myqcloud.com/img/image-20250411172907-0bq68ih.png)
 
 exp：
 
@@ -1065,7 +1064,7 @@ https://github.com/UESuperGate/D3CTF-Source/blob/master/hackphp/exp.php
 
 https://www.anquanke.com/post/id/235237#h2-5
 
-### 堆UAF：phpmaster
+### UAF：phpmaster
 
 ‍
 
@@ -1083,4 +1082,6 @@ https://www.bookstack.cn/read/php7-internal/7-implement.md
 
 https://xuanxuanblingbling.github.io/ctf/pwn/2020/05/05/mixture/
 
-‍
+
+## 题目附件
+https://pan.baidu.com/s/1zUoi76y5MoUOYPsVVZvnmQ?pwd=x49f

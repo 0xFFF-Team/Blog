@@ -101,6 +101,10 @@ theme = "re-terminal"
         identifier = "members"
         name = "Members"
         url = "/members"
+      [[languages.en.menu.main]]
+        identifier = "Knowledge"
+        name = "Knowledge"
+        url = "/knowledge"
 
 [module]
   # In case you would like to make changes to the theme and keep it locally in you repository,
